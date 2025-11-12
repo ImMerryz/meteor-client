@@ -84,7 +84,18 @@ public class BowSpam extends Module {
     }
 
     @EventHandler
+    if (mc.player == null || mc.world == null) return;
+if (mc.currentScreen != null && !(mc.currentScreen instanceof net.minecraft.client.gui.screen.ingame.InventoryScreen)) {
+    // ignore other screens (optional)
+}
+mc.setScreen(null); // temporarily close screen logic for tick simulation
     private void onTick(TickEvent.Pre event) {
+    // Allow bow spam to work even when GUI (inventory, chest, etc.) is open
+    if (mc.player == null) return;
+    if (mc.world == null) return;
+    if (mc.currentScreen != null && !(mc.currentScreen instanceof net.minecraft.client.gui.screen.ingame.HandledScreens)) {
+        // continue anyway, don't return
+    }
         FindItemResult crossbow = searchInventory.get() ? InvUtils.find(this::crossbow) : InvUtils.find(this::crossbow, 0, 8);
         if (spamCrossbows.get() && crossbow.found()) {
             if (ticks >= crossbowDelay.get()) {
